@@ -13,7 +13,11 @@
 
   /* ---------- Estado ---------- */
   const load = () => { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } };
+  // De momento las casillas abiertas NO se recuerdan: al recargar vuelven a estar cerradas.
+  // Para recordarlas entre visitas, pon PERSIST_OPENED = true.
+  const PERSIST_OPENED = false;
   const state = Object.assign({ opened: [], quiz: {}, raffles: {} }, load());
+  if (!PERSIST_OPENED) state.opened = [];
   const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} };
 
   /* ---------- Día actual ---------- */
