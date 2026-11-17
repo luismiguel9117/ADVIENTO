@@ -17,3 +17,12 @@ Web estática (HTML + CSS + JS, sin build). Sirve la carpeta con cualquier servi
 ## Regenerar imágenes (local, GPU NVIDIA)
 `bash tools/generar-imagenes.sh` (o una sola: `scene`, `modal-vocab`, `modal-quiz`, `modal-discount`, `modal-raffle`).
 Usa los modelos que Open Higgsfield guarda en `%APPDATA%/open-generative-ai/local-ai`.
+
+## Vídeo de fondo en bucle (Wan2GP, local)
+- `assets/gen/scene-loop.webm|mp4` (~1 MB): generado con Wan2GP (Wan 2.2 Image2Video Enhanced Lightning, 4 pasos) usando
+  `assets/gen/scene.jpg` como fotograma **inicial y final**, así el bucle no tiene corte. Cámara fija verificada (0 px de desplazamiento).
+- Ajustes: `tools/video/loop_settings.json`. Wan2GP está instalado en `C:\Users\Usuario\AI\Wan2GP`:
+  `.venv\Scripts\python wgp.py --process bh_loop.json --output-dir bh_out --profile 0 --attention sage2`
+- Post-proceso: interpolado a 32 fps y codificado con ffmpeg (ver historial). Original sin procesar en `assets/src/video/`.
+- La cuadrícula de cajas se superpone nítida sobre el vídeo; si el usuario pide menos movimiento o ahorro de datos, se muestra la imagen fija.
+- `UNLOCK_ALL` y `PERSIST_OPENED` en `js/app.js` controlan el desbloqueo por fecha y si se recuerdan las casillas abiertas.
