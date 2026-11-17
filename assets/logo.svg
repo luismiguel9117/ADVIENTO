@@ -9,6 +9,6 @@
     <path d="M150 262 Q172 250 194 262 L190 278 Q172 290 154 278 Z"/>
     <path d="M140 300 Q172 325 204 300 Q200 318 172 322 Q144 318 140 300 Z"/>
   </g>
-  <text x="440" y="292" font-family="'Arial Black','Montserrat',sans-serif" font-weight="900" font-size="200" fill="#FF2323" letter-spacing="2">BRITISH HOUSE</text>
-  <text x="728" y="398" font-family="'Montserrat',Arial,sans-serif" font-weight="800" font-size="88" fill="#0033A0" letter-spacing="34">INTERNATIONAL</text>
+  <text x="440" y="292" textLength="1520" lengthAdjust="spacingAndGlyphs" font-family="'Arial Black','Montserrat',sans-serif" font-weight="900" font-size="200" fill="#FF2323" letter-spacing="2">BRITISH HOUSE</text>
+  <text x="728" y="398" textLength="940" lengthAdjust="spacingAndGlyphs" font-family="'Montserrat',Arial,sans-serif" font-weight="800" font-size="88" fill="#0033A0" letter-spacing="34">INTERNATIONAL</text>
 </svg>

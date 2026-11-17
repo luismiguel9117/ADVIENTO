@@ -26,22 +26,16 @@
 
   /* ---------- Tablero ---------- */
   const board = $("#board");
-  DAYS.forEach((d, i) => {
-    const el = document.createElement("div");
-    el.className = "door " + (i % 2 === Math.floor(i / 6) % 2 ? "red" : "blue");
-    el.setAttribute("role", "listitem");
-    el.dataset.day = d.day;
-    const locked = d.day > today;
+  const spots = SCENE.buildSpots(board, DAYS, (d, el) => openDoor(d, el));
+  spots.forEach((el, i) => {
+    const d = DAYS[i], locked = d.day > today;
+    el.setAttribute("aria-label", `Día ${d.day}${locked ? " (bloqueado)" : ""}`);
     if (locked) el.classList.add("locked");
     if (d.day === today && !DEMO) el.classList.add("today");
     if (state.opened.includes(d.day)) el.classList.add("open");
-    el.innerHTML = `
-      <div class="inside" aria-hidden="true">${d.icon}</div>
-      <div class="face"><span>${d.day}</span><span class="ico">${d.icon}</span></div>
-      <button aria-label="Día ${d.day}${locked ? " (bloqueado)" : ""}"></button>`;
-    el.querySelector("button").addEventListener("click", () => openDoor(d, el));
-    board.appendChild(el);
   });
+  const glows = SCENE.buildGlows($(".glows"));
+  SCENE.animate(glows, spots);
 
   function openDoor(d, el) {
     if (d.day > today) {
@@ -72,7 +66,7 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   function showModal(d) {
-    let html = `<img class="m-art" src="assets/gen/modal-${d.type}.png" alt="" onerror="this.remove()">
+    let html = `<img class="m-art" src="assets/gen/modal-${d.type}.jpg" alt="" onerror="this.remove()">
       <span class="tag">Día ${d.day} · ${TAGS[d.type]}</span>`;
     if (d.type === "vocab") {
       html += `<h3 id="mTitle">${esc(d.word)} <button class="speak" data-say="${esc(d.word)}">🔊 Escuchar</button></h3>
@@ -242,21 +236,30 @@
   /* ---------- Animaciones de entrada (GSAP) ---------- */
   if (hasGsap) {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(".ribbon", { y: -40, rotation: -12, opacity: 0, duration: .7, ease: "back.out(2)" })
-      .from("h1", { y: 30, opacity: 0, duration: .7 }, "-=.35")
-      .from("h1 .hl", { scale: .4, rotation: -14, duration: .7, ease: "elastic.out(1,.5)" }, "-=.3")
-      .from(".lead, #openToday", { y: 20, opacity: 0, stagger: .1, duration: .5 }, "-=.4")
-      .from(".house", { y: 60, opacity: 0, duration: .8 }, .2)
-      .from(".door", { scale: 0, opacity: 0, duration: .45, ease: "back.out(2)", stagger: { each: .03, from: "random" } }, .5)
-      .from(".feature", { y: 24, opacity: 0, stagger: .08, duration: .5 }, "-=.4")
-      .from(".unit", { y: 24, opacity: 0, stagger: .08, duration: .5 }, "-=.3");
-    gsap.to(".roof-badge", { y: -6, duration: 1.8, yoyo: true, repeat: -1, ease: "sine.inOut" });
-    gsap.to("#openToday", { scale: 1.05, duration: .9, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2 });
+    tl.from(".plate", { opacity: 0, scale: 1.08, duration: 1.4, ease: "power2.out" })
+      .from(".ribbon", { y: -40, rotation: -14, opacity: 0, duration: .7, ease: "back.out(2)" }, .3)
+      .from("h1 .l1, h1 .l2", { y: 30, opacity: 0, stagger: .12, duration: .7 }, "-=.35")
+      .from("h1 .hl", { scale: .3, rotation: -18, opacity: 0, duration: .9, ease: "elastic.out(1,.5)" }, "-=.35")
+      .from(".lead, #openToday", { y: 20, opacity: 0, stagger: .1, duration: .5 }, "-=.6")
+      .from(spots.map((s) => s.querySelector(".lid")), { filter: "brightness(1.8)", duration: .5, stagger: { each: .035, grid: [4, 6], from: "start" }, clearProps: "filter" }, .6)
+      .from(".features", { y: 30, opacity: 0, duration: .6 }, "-=.6")
+      .from(".countdown", { y: 30, opacity: 0, duration: .6 }, "-=.4")
+      .from(".unit", { scale: .6, opacity: 0, stagger: .08, duration: .5, ease: "back.out(2)" }, "-=.3");
+    gsap.to("#openToday", { scale: 1.05, duration: .9, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2.5 });
+    gsap.to("h1 .hl", { rotation: -2, duration: 2.4, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2 });
+    gsap.to(".countdown .flake", { rotation: 360, duration: 12, repeat: -1, ease: "none" });
     if (window.ScrollTrigger) {
       gsap.registerPlugin(ScrollTrigger);
       gsap.utils.toArray(".block").forEach((s) => gsap.from(s.children, { y: 40, opacity: 0, stagger: .1, duration: .7, scrollTrigger: { trigger: s, start: "top 85%" } }));
     }
   }
+
+  /* ---------- Header / menú ---------- */
+  const menuBtn = $(".menu-toggle"), menu = $(".nav ul");
+  menuBtn.addEventListener("click", () => menuBtn.setAttribute("aria-expanded", menu.classList.toggle("open")));
+  menu.addEventListener("click", (e) => { if (e.target.closest("a")) { menu.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); } });
+  const onScroll = () => $(".topbar").classList.toggle("scrolled", scrollY > 40);
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
   /* ---------- Init ---------- */
   $("#year").textContent = new Date().getFullYear();
