@@ -41,6 +41,16 @@ a{color:inherit;text-decoration:none}
 .scene{position:absolute;inset:0}
 .kb{position:absolute;inset:0;transform-origin:58% 45%;will-change:transform}
 .plate{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none}
+.plate-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s}
+.plate.crisp{display:none}
+.video-on .plate-video{opacity:1}
+/* Con el vídeo activo, la cuadrícula de cajas se mantiene nítida y fija (la imagen original encima, con bordes difuminados) */
+.video-on .plate.crisp{display:block;
+  -webkit-mask-image:linear-gradient(90deg,transparent 49.6%,#000 51%,#000 87.4%,transparent 88.8%),linear-gradient(180deg,transparent 25.2%,#000 26.4%,#000 63.8%,transparent 65.2%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 49.6%,#000 51%,#000 87.4%,transparent 88.8%),linear-gradient(180deg,transparent 25.2%,#000 26.4%,#000 63.8%,transparent 65.2%);
+  mask-composite:intersect}
+.video-on .glow.win,.video-on .glow.clock{display:none}
 .godrays{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.55;
   background:radial-gradient(ellipse 40% 55% at 92% 35%,rgba(255,226,160,.55),transparent 70%),
              radial-gradient(ellipse 30% 30% at 62% 18%,rgba(255,255,255,.5),transparent 70%)}

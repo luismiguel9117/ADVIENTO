@@ -90,5 +90,20 @@ window.SCENE = (() => {
     }
   }
 
-  return { buildSpots, buildGlows, animate };
+  // Vídeo de fondo en bucle: solo si el usuario no pide menos movimiento ni ahorro de datos.
+  function startVideo(hero) {
+    const v = hero.querySelector(".plate-video");
+    if (!v) return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const saveData = navigator.connection && navigator.connection.saveData;
+    if (reduce || saveData) return;
+    v.innerHTML = `<source src="assets/gen/scene-loop.webm" type="video/webm"><source src="assets/gen/scene-loop.mp4" type="video/mp4">`;
+    v.addEventListener("playing", () => hero.classList.add("video-on"), { once: true });
+    v.load();
+    v.play().catch(() => {});
+    // Pausa cuando la portada no está a la vista
+    new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause())).observe(hero);
+  }
+
+  return { buildSpots, buildGlows, animate, startVideo };
 })();

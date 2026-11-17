@@ -2,7 +2,9 @@
   "use strict";
   const DAYS = window.ADVENT_DAYS || [];
   const params = new URLSearchParams(location.search);
-  const DEMO = params.has("demo");             // ?demo  -> todas las casillas abiertas
+  // De momento todas las casillas se pueden abrir. Para activar el bloqueo por fecha, pon UNLOCK_ALL = false.
+  const UNLOCK_ALL = true;
+  const DEMO = UNLOCK_ALL || params.has("demo"); // ?demo  -> todas las casillas abiertas
   const FORCED_DAY = parseInt(params.get("day"), 10); // ?day=5 -> simula el 5 de diciembre
   const STORE_KEY = "bh-advent-v1";
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -36,6 +38,7 @@
   });
   const glows = SCENE.buildGlows($(".glows"));
   SCENE.animate(glows, spots);
+  SCENE.startVideo($(".hero"));
 
   function openDoor(d, el) {
     if (d.day > today) {
@@ -169,8 +172,10 @@
   $("#openToday").addEventListener("click", () => {
     $("#calendario").scrollIntoView({ behavior: "smooth" });
     if (today === 0) return toast("🎄 El calendario empieza el 1 de diciembre. ¡Mira la cuenta atrás!");
-    const el = board.querySelector(`[data-day="${today}"]`);
-    setTimeout(() => openDoor(DAYS[today - 1], el), 400);
+    // Con todo desbloqueado, abre la primera casilla que aún no se ha abierto
+    const target = UNLOCK_ALL ? (DAYS.find((d) => !state.opened.includes(d.day)) || DAYS[0]).day : today;
+    const el = board.querySelector(`[data-day="${target}"]`);
+    setTimeout(() => openDoor(DAYS[target - 1], el), 400);
   });
 
   /* ---------- Cuenta atrás ---------- */
@@ -263,7 +268,7 @@
 
   /* ---------- Init ---------- */
   $("#year").textContent = new Date().getFullYear();
-  if (DEMO || FORCED_DAY) {
+  if ((DEMO && !UNLOCK_ALL) || FORCED_DAY) {
     const f = document.createElement("div"); f.className = "demo-flag";
     f.textContent = DEMO ? "MODO DEMO · todo desbloqueado" : `Simulando: ${today} de diciembre`;
     document.body.appendChild(f);
